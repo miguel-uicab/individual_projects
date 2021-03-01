@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'sam_first_ML_mfup
+
+  Sample SAM Template for sam_first_ML_mfup
+
+  '
+Globals:
+  Function:
+    Timeout: 60
+Resources:
+  ModelInferenceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ModelInferenceFunction
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+      - S3ReadPolicy:
+          BucketName: cmra-serverless-ml-tutorial-mfup
+      Events:
+        API:
+          Type: Api
+          Properties:
+            Path: /inferences
+            Method: post
+Outputs:
+  API:
+    Description: API Gateway endpoint URL for Prod stage for ModelInference function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  ModelInferenceFunction:
+    Description: Model Inference Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - ModelInferenceFunction
+      - Arn
+  ModelInferenceFunctionIamRole:
+    Description: Implicit IAM Role created for ModelInference function
+    Value:
+      Fn::GetAtt:
+      - ModelInferenceFunctionRole
+      - Arn
